@@ -75,13 +75,21 @@ class GridDraw {
     }
 
     setPoint(x, y, r,g,b,a){
-        let newX = x * this.spacingX;
-        let newY = y * this.spacingY;
+
+        
+        let newX = (x * this.spacingX) +this.gridOriginX ;
+        let newY = (y * this.spacingY) - this.gridOriginY;
+
         push();
-        translate(this.gridOriginX, this.gridOriginY);
+
         noStroke();
         fill(r,g,b,a);
-        ellipse(newX, -newY, this.pointSize);
+
+
+
+        if (newX < this.rightEdge && newX > this.leftEdge && -newY > this.topEdge && -newY < this.botEdge){
+            ellipse(newX, -newY, this.pointSize);
+        }
         if (this.pointText){
             let textX = round(x, 3);
             let textY = round(y, 3);

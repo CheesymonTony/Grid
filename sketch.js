@@ -144,8 +144,8 @@ function draw(){
     for (let i = 0; i < outputPoints3.length; i++){
         grid.setPoint(outputPoints3[i].x, outputPoints3[i].y*10, 0,0,255);
         // outputPoints6[i].normalize();
-        grid.setPoint(outputPoints3[i].x, outputPoints6[i].y, 255,0,255);
-        numbaz.push([round(outputPoints3[i].y,5), round(outputPoints6[i].y,5)]);
+        // grid.setPoint(outputPoints3[i].x, outputPoints6[i].y, 255,0,255);
+        // numbaz.push([round(outputPoints3[i].y,5), round(outputPoints6[i].y,5)]);
 
     }
     
