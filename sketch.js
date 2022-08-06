@@ -1,26 +1,16 @@
 
 var grid;
 var opacitySlider;
-var resSlider;
 var baseNumber = new p5.Vector(1, 1);
 var power = 10;
-calculate = true;
-let outputPoints1 = [];
-let outputPoints2 = [];
-let outputPoints4 = [];
-let outputPoints5 = [];
-let numbaz = [];
+var calculate = true;
 var resIn = 20;
-
-
 var n;
 
 
 function h1(t) {
     let f1 = 2 * pow(t, 3);
-
     let f2 = 3 * pow(t, 2);
-
     return f1 - f2 + 1;
   }
 
@@ -42,13 +32,8 @@ function h3(t) {
     return f1 - f2;
   }
 
-// function mouseIsPressed(){
-//     grid.setOrigin(mouseX, mouseY);
-// }
-
 function mouseDragged(){
     grid.setOrigin(mouseX, mouseY);
-
 }
 
 
@@ -60,32 +45,17 @@ function setup(){
     opacitySlider = createSlider(0, 100, 10, 0.10);
     opacitySlider.position(120,130);
 
-    resSlider = createSlider(0, 100, 10, 1);
-    resSlider.position(120,150);
     grid.setText(false, 6);
     n = createVector(baseNumber.x, baseNumber.y);
 }
 
-// function mousePressed(){
-//     console.log('basenumber was: ' + baseNumber)
-//     console.log('n was: ' + n)
-//     baseNumber.mult(n);
-//     outputPoints.push(createVector(baseNumber.x, baseNumber.y));
-//     console.log('basenumber is now: ' + baseNumber)
-//     console.log('n is now: ' + n);
-
-// }    
-
 function draw(){
-    let outputPoints3 = [];
-    let outputPoints6 = [];
-    
-
     background(100);
-    let opacVal = opacitySlider.value();
-    let resVal = resSlider.value();
-    
 
+    let outputPoints1 = [];
+    let outputPoints2 = [];
+
+    let opacVal = opacitySlider.value();
     grid.setResolution(resIn);
     grid.setGridOpacity(opacVal);
 
@@ -108,56 +78,17 @@ function draw(){
             let num5 = 2*index;
             let num6 = num4 - num5;
 
-            
-            
-            // outputPoints1.push(createVector(index*10, num1*10));
-            // outputPoints2.push(createVector(index*10, num2*10));
-            outputPoints3.push(createVector(index*10, num3));
-            // outputPoints4.push(createVector(index*10, num4*10));
-            // outputPoints5.push(createVector(index*10, num5*10));
-            outputPoints6.push(createVector(index*10, num6));
+            outputPoints1.push(createVector(index*10, num3));
+            outputPoints2.push(createVector(index*10, num6));
 
-            
-
-
-
-            // let numX = num1*baseNumber.x;
-            // let numY = num1*baseNumber.y;
-
-
-            // text(n, n.x, n.y);
-            // if (i == power - 2){
-            //     calculate = false;
-            // }
             index += inc;
         }
     }
 
-    // for (let points of outputPoints1){
-    //     grid.setPoint(points.x, points.y, 255,0,0);
-    // }
-
-    // for (let points of outputPoints2){
-    //     grid.setPoint(points.x, points.y, 0,255,0);
-    // }
-
-    for (let i = 0; i < outputPoints3.length; i++){
-        grid.setPoint(outputPoints3[i].x, outputPoints3[i].y*10, 0,0,255);
-        // outputPoints6[i].normalize();
-        grid.setPoint(outputPoints3[i].x, outputPoints6[i].y, 255,0,255);
-        numbaz.push([round(outputPoints3[i].y,5), round(outputPoints6[i].y,5)]);
-
+    for (let i = 0; i < outputPoints1.length; i++){
+        grid.setPoint(outputPoints1[i].x, outputPoints1[i].y*10, 0,0,255);
+        grid.setPoint(outputPoints2[i].x, outputPoints2[i].y, 255,0,255);
     }
-    
-    // for (let points of outputPoints6){
-    //     grid.setPoint(points.x, points.y, 255,0,255);
-    // }
-    // if (frameCount == 1){
-    //     console.table(numbaz);
-
-    // }
-    
-
 }
 
 window.addEventListener("wheel", function(e) {
@@ -166,6 +97,5 @@ window.addEventListener("wheel", function(e) {
     else {
         resIn *= .95;
     }
-
-
   });
+  console.log(require('./config'))

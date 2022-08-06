@@ -77,20 +77,12 @@ class GridDraw {
 
     setPoint(x, y, r,g,b,a){
 
-
-
+        //set the spacing and the position of the incoming points to be relative to the resolution and the grid origin position
         let newX = (x * this.spacingX) +this.gridOriginX ;
         let newY = (y * this.spacingY) - this.gridOriginY;
 
-        // ellipse(newX, -newY, 10);
-
-        // push();
-
         noStroke();
         fill(r,g,b,a);
-
-
-
         if (newX < this.rightEdge && newX > this.leftEdge && -newY > this.topEdge && -newY < this.botEdge){
             ellipse(newX, -newY, this.pointSize);
         }
@@ -100,8 +92,6 @@ class GridDraw {
             textSize(this.textSize);
             text(textX + ', ' + textY, newX+5, -newY);
         }
-        pop();
-        
     }
 
 
