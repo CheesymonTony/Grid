@@ -13,6 +13,7 @@ class GridDraw {
         this.tickLen = 3;
         this.spacingX = this.width/this.resolution;
         this.spacingY = this.height/this.resolution;
+        this.plottedPoints = [];
        
         
         
@@ -76,11 +77,14 @@ class GridDraw {
 
     setPoint(x, y, r,g,b,a){
 
-        
+
+
         let newX = (x * this.spacingX) +this.gridOriginX ;
         let newY = (y * this.spacingY) - this.gridOriginY;
 
-        push();
+        // ellipse(newX, -newY, 10);
+
+        // push();
 
         noStroke();
         fill(r,g,b,a);
@@ -157,7 +161,14 @@ class GridDraw {
             stroke(0,0,0,this.gridOpacity);
             line(this.leftEdge, this.gridOriginY + ySpace, this.rightEdge, this.gridOriginY + ySpace);
         }
+        // push();
 
+        // noStroke();
+        // fill(r,g,b,a);
+        // for (let points of this.plottedPoints){
+           
+        // }
+        // pop();
 
 
 

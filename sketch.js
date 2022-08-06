@@ -7,10 +7,8 @@ var power = 10;
 calculate = true;
 let outputPoints1 = [];
 let outputPoints2 = [];
-let outputPoints3 = [];
 let outputPoints4 = [];
 let outputPoints5 = [];
-let outputPoints6 = [];
 let numbaz = [];
 var resIn = 20;
 
@@ -79,7 +77,9 @@ function setup(){
 // }    
 
 function draw(){
-
+    let outputPoints3 = [];
+    let outputPoints6 = [];
+    
 
     background(100);
     let opacVal = opacitySlider.value();
@@ -110,8 +110,8 @@ function draw(){
 
             
             
-            outputPoints1.push(createVector(index*10, num1*10));
-            outputPoints2.push(createVector(index*10, num2*10));
+            // outputPoints1.push(createVector(index*10, num1*10));
+            // outputPoints2.push(createVector(index*10, num2*10));
             outputPoints3.push(createVector(index*10, num3));
             // outputPoints4.push(createVector(index*10, num4*10));
             // outputPoints5.push(createVector(index*10, num5*10));
@@ -144,8 +144,8 @@ function draw(){
     for (let i = 0; i < outputPoints3.length; i++){
         grid.setPoint(outputPoints3[i].x, outputPoints3[i].y*10, 0,0,255);
         // outputPoints6[i].normalize();
-        // grid.setPoint(outputPoints3[i].x, outputPoints6[i].y, 255,0,255);
-        // numbaz.push([round(outputPoints3[i].y,5), round(outputPoints6[i].y,5)]);
+        grid.setPoint(outputPoints3[i].x, outputPoints6[i].y, 255,0,255);
+        numbaz.push([round(outputPoints3[i].y,5), round(outputPoints6[i].y,5)]);
 
     }
     
