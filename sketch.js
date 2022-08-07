@@ -1,4 +1,7 @@
 
+const bod = document.getElementsByClassName('bodyo');
+
+
 var grid;
 var opacitySlider;
 var baseNumber = new p5.Vector(1, 1);
@@ -6,7 +9,23 @@ var power = 10;
 var calculate = true;
 var resIn = 20;
 var n;
+var inGrid = false;
+var moveGrid = false;
+var clicked = false;
 
+
+
+var anchorPoint;
+
+
+function mousePressed(){
+    clicked = true;
+
+}
+function mouseReleased(){
+    clicked = false;
+
+}
 
 function h1(t) {
     let f1 = 2 * pow(t, 3);
@@ -32,9 +51,12 @@ function h3(t) {
     return f1 - f2;
   }
 
-function mouseDragged(){
-    grid.setOrigin(mouseX, mouseY);
-}
+
+
+// function mouseDragged(){
+//     grid.setOrigin(mouseX, mouseY);
+    
+// }
 
 
 function setup(){
@@ -45,12 +67,25 @@ function setup(){
     opacitySlider = createSlider(0, 100, 10, 0.10);
     opacitySlider.position(120,130);
 
-    grid.setText(false, 6);
+    grid.setText(false, 8);
     n = createVector(baseNumber.x, baseNumber.y);
+
+
+    anchorPoint = createVector(width * .5, height * .925);
 }
 
 function draw(){
     background(100);
+    if (mouseX < grid.rightEdge && mouseX > grid.leftEdge && mouseY > grid.topEdge && mouseY < grid.botEdge){
+        inGrid = true;
+        document.body.classList.add('stop-scroll');
+    } else {
+        inGrid = false;
+        document.body.classList.remove('stop-scroll');
+
+    }
+
+    grid.clickDragGrid(clicked);
 
     let outputPoints1 = [];
     let outputPoints2 = [];
@@ -58,6 +93,17 @@ function draw(){
     let opacVal = opacitySlider.value();
     grid.setResolution(resIn);
     grid.setGridOpacity(opacVal);
+
+
+    ellipse(anchorPoint.x, anchorPoint.y, 10);
+
+
+    for (let i = 0; i < 10; i++){
+        let distance = 300;
+        ellipse(i*30+anchorPoint.x, anchorPoint.y, 5);
+    }
+
+
 
     grid.show();
     let inc = 1/ power;
@@ -71,10 +117,10 @@ function draw(){
             // let num5 = 6*index;
             // let num6 = num4 - num5;
 
-            let num1 = pow(index, 3);
+            let num1 = 2*pow(index, 3);
             let num2 = pow(index, 2);
             let num3 = num1 - num2 + 1;
-            let num4 = 3 * pow(index,2);
+            let num4 = 6 * pow(index,2);
             let num5 = 2*index;
             let num6 = num4 - num5;
 
@@ -92,10 +138,14 @@ function draw(){
 }
 
 window.addEventListener("wheel", function(e) {
-    if (e.deltaY > 0){
-        resIn *= 1.05;}
-    else {
-        resIn *= .95;
+    if(inGrid){
+        if (e.deltaY > 0){
+            resIn *= 1.05;}
+        else {
+            resIn *= .95;
+        }
     }
+    
   });
-  console.log(require('./config'))
+
+  

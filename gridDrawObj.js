@@ -13,7 +13,8 @@ class GridDraw {
         this.tickLen = 3;
         this.spacingX = this.width/this.resolution;
         this.spacingY = this.height/this.resolution;
-        this.plottedPoints = [];
+        this.plottedPoints;
+        this.offsetCapture = false;
        
         
         
@@ -33,25 +34,80 @@ class GridDraw {
 
     }
 
-    setOrigin(x, y){
+    xIsInBounds(x){
+        return (x > this.leftEdge && x < this.rightEdge);
+    }
 
+    yIsInBounds(y){
+        return (y > this.topEdge && y < this.botEdge);
+    }
+
+    clickDragGrid(clicked){
+        
+
+
+        
+        if (clicked){
+            let x = mouseX;
+            let y = mouseY;
+            if(!this.offsetCapture){
+                this.offsetX = this.gridOriginX - x;
+                this.offsetY = this.gridOriginY - y;
+                this.offsetCapture = true;
+            } else {
+                this.gridOriginY = y + this.offsetY;
+                this.gridOriginX = x + this.offsetX;
+            } 
+        } else {
+            this.offsetCapture = false;
+        }
+
+
+            
+            
+            // if (y < this.topEdge){
+            //     this.gridOriginY = this.topEdge;
+            // } else if (y > this.botEdge){
+            //     this.gridOriginY = this.botEdge;
+            // }else {
+            // this.gridOriginY = y;
+            // }
+            // if (x < this.leftEdge){
+            //     this.gridOriginX = this.leftEdge;
+            // } else if (x > this.rightEdge){
+            //     this.gridOriginX = this.rightEdge;
+            // } else {
+            //     this.gridOriginX = x;
+            // }
+            
+        
+
+    }
+
+
+    setOrigin(x, y){
+        let offsetX = this.gridOriginX - x;
+        let offsetY = this.gridOriginY - y;
         if (y < this.topEdge){
             this.gridOriginY = this.topEdge;
         } else if (y > this.botEdge){
             this.gridOriginY = this.botEdge;
         }else {
-        this.gridOriginY = y;
+        this.gridOriginY = -offsetY;
         }
         if (x < this.leftEdge){
             this.gridOriginX = this.leftEdge;
         } else if (x > this.rightEdge){
             this.gridOriginX = this.rightEdge;
         } else {
-            this.gridOriginX = x;
+            this.gridOriginX = offsetX;
         }
         
     }
 
+    setTickPos(){
+
+    }
 
     setText(txt, txtSize){
         this.pointText = txt;
@@ -62,7 +118,7 @@ class GridDraw {
         this.resolution = res;
         this.spacingX = this.width/this.resolution;
         this.spacingY = this.height/this.resolution;
-        this.pointSize = map(this.resolution, 1, 100, 4, .6);
+        this.pointSize = map(this.resolution, 1, 500, 4, .6);
 
 
     }
@@ -75,12 +131,19 @@ class GridDraw {
         this.lineW = lineW;
     }
 
-    setPoint(x, y, r,g,b,a){
+    setPoint2(points){
+        
+    }
 
+
+    setPoint(x, y, r,g,b,a){
+        this.plottedPoints = [];
         //set the spacing and the position of the incoming points to be relative to the resolution and the grid origin position
         let newX = (x * this.spacingX) +this.gridOriginX ;
         let newY = (y * this.spacingY) - this.gridOriginY;
 
+
+        this.plottedPoints = []
         noStroke();
         fill(r,g,b,a);
         if (newX < this.rightEdge && newX > this.leftEdge && -newY > this.topEdge && -newY < this.botEdge){
@@ -109,168 +172,141 @@ class GridDraw {
 
         
 
-        stroke(0,0,255);
-        strokeWeight(2);
-        line(this.gridOriginX, this.gridOriginY, this.gridOriginX, this.topEdge);
-        line(this.gridOriginX, this.gridOriginY, this.gridOriginX, this.botEdge);
+        //check if origin line is in the bounds of the frame, and if so, draw the respective origin line\\
 
-        stroke(255,0,0);
-        strokeWeight(2);
-        line(this.gridOriginX, this.gridOriginY, this.rightEdge, this.gridOriginY);
-        line(this.leftEdge, this.gridOriginY, this.gridOriginX, this.gridOriginY);
+        //Y origin line\\
+        if (this.xIsInBounds(this.gridOriginX)){
+            let yLoc = this.gridOriginX;
+            if (!this.xIsInBounds(this.gridOriginX)){
+                if (this.gridOriginX > this.top){
+                    yLoc = this.botEdge;
+                } else {
+                    yLoc = this.topEdge;
+                }
+            } 
+            stroke(0,0,255);
+            strokeWeight(2);
+            line(this.gridOriginX, yLoc, this.gridOriginX, this.topEdge);
+            line(this.gridOriginX, yLoc, this.gridOriginX, this.botEdge);
+        }
+        //X origin line\\
+        if (this.yIsInBounds(this.gridOriginY)){
+            let xLoc = this.gridOriginX;
+            if (!this.xIsInBounds(this.gridOriginX)){
+                if (this.gridOriginX > this.leftEdge){
+                    xLoc = this.rightEdge;
+                } else {
+                    xLoc = this.leftEdge;
+                }
+            }   
+            stroke(255,0,0);
+            strokeWeight(2);
+            line(xLoc, this.gridOriginY, this.rightEdge, this.gridOriginY);
+            line(this.leftEdge, this.gridOriginY, xLoc, this.gridOriginY);
 
+            
+        }
+            
+
+
+        //Calculate the amounts of lines to each side of the origin lines\\
+        //Pos X Lines\\
         let rightGridLines = floor((this.rightEdge - this.gridOriginX) / this.spacingX);
+        //Neg X Lines\\
         let leftGridLines = floor((this.gridOriginX - this.leftEdge) / this.spacingX);
+        //Pos Y Lines\\
         let topGridLines = floor((this.gridOriginY - this.topEdge) / this.spacingY);
+        //Neg Y Lines
         let botGridLines = floor((this.botEdge - this.gridOriginY) / this.spacingY);
 
+        //Draw Pos X Lines\\
         for (let i = 1; i <= rightGridLines; i++){
             let xSpace = i * this.spacingX;
-            strokeWeight(1);
-            stroke(0,0,0,this.gridOpacity);
-            line(this.gridOriginX + xSpace, this.topEdge, this.gridOriginX + xSpace, this.botEdge);
+            if (this.xIsInBounds(this.gridOriginX + xSpace)){
+                strokeWeight(1);
+                stroke(0,0,0,this.gridOpacity);
+                line(this.gridOriginX + xSpace, this.topEdge, this.gridOriginX + xSpace, this.botEdge);
+                strokeWeight(1);
+                stroke(0,0,0,255);
+                if (this.yIsInBounds(this.gridOriginY)){
+                    line(this.gridOriginX + xSpace, this.gridOriginY - this.tickLen, this.gridOriginX + xSpace, this.gridOriginY + this.tickLen);
+                    fill(0);
+                    noStroke();
+                    textSize(this.textSize);
+                    textAlign(CENTER, CENTER);
+                    text(i, this.gridOriginX + xSpace, this.gridOriginY + this.tickLen+5);
+                }
+            }
+            
         }
-        
+        //Draw Neg X Lines\\
         for (let i = 1; i <= leftGridLines; i++){
             let xSpace = i * this.spacingX;
-            strokeWeight(1);
-            stroke(0,0,0,this.gridOpacity);
-            line(this.gridOriginX - xSpace, this.topEdge, this.gridOriginX - xSpace, this.botEdge);
+            if (this.xIsInBounds(this.gridOriginX - xSpace)){
+                strokeWeight(1);
+                stroke(0,0,0,this.gridOpacity);
+                line(this.gridOriginX - xSpace, this.topEdge, this.gridOriginX - xSpace, this.botEdge);
+                strokeWeight(1);
+                stroke(0,0,0,255);
+                if (this.yIsInBounds(this.gridOriginY)){
+                    line(this.gridOriginX - xSpace, this.gridOriginY - this.tickLen, this.gridOriginX - xSpace, this.gridOriginY + this.tickLen);
+                    fill(0);
+                    noStroke();
+                    textSize(this.textSize);
+                    textAlign(CENTER, CENTER);
+                    text(-i, this.gridOriginX - xSpace, this.gridOriginY + this.tickLen+5);
+                }
+            }
+            
         }
-
+        //Draw Pos Y Lines\\
         for (let i = 1; i <= topGridLines; i++){
             let ySpace = i * this.spacingY;
-            strokeWeight(1);
-            stroke(0,0,0,this.gridOpacity);
-            line(this.leftEdge, this.gridOriginY - ySpace, this.rightEdge, this.gridOriginY - ySpace);
-        }
-
-        for (let i = 1; i <= botGridLines; i++){
-            let ySpace = i * this.spacingY;
-            strokeWeight(1);
-            stroke(0,0,0,this.gridOpacity);
-            line(this.leftEdge, this.gridOriginY + ySpace, this.rightEdge, this.gridOriginY + ySpace);
-        }
-        // push();
-
-        // noStroke();
-        // fill(r,g,b,a);
-        // for (let points of this.plottedPoints){
-           
-        // }
-        // pop();
-
-
-
-
-        // for (let i = 0; i <= this.resolution/2; i++){
-        //     let x = this.spacingX*i;
-        //     let y = this.spacingY*i;
-        //     //layout X gridlines\\
-            
-            
-            
-        //     stroke(0,0,0,this.gridOpacity);
-        //     if (i == 0){
-        //         push();
-        //         stroke(255,0,0, 255);
-        //         line(this.originX + x, this.originY - this.height/2, this.originX + x, this.originY + this.height/2);
-        //         stroke(0,0,255, 255);
-        //         line(this.originX - this.width/2, this.originY + y , this.originX + this.width/2, this.originY + y);
-        //         pop();
-        //     } else {
-        //         line(this.originX + x, this.originY - this.height/2, this.originX + x, this.originY + this.height/2);
-                
-        //         line(this.originX- x, this.originY - this.height/2, this.originX - x, this.originY + this.height/2);
-        //         line(this.originX - this.width/2, this.originY + y , this.originX + this.width/2, this.originY + y);
-        //         line(this.originX - this.width/2, this.originY - y , this.originX + this.width/2, this.originY - y);
-               
-        //         //layout tick marks\\
-        //         push();
-        //         stroke(0,0,0,255);
-        //         line(this.originX + x, this.originY - this.tickLen, this.originX + x, this.originY + this.tickLen);
-        //         line(this.originX - x, this.originY - this.tickLen, this.originX - x, this.originY + this.tickLen);
-        //         line(this.originX - this.tickLen, this.originY + y, this.originX + this.tickLen, this.originY + y);
-        //         line(this.originX - this.tickLen, this.originY - y, this.originX + this.tickLen, this.originY - y);
-                
-        //         pop();
-        //         push();
-        //         fill(0);
-        //         noStroke();
-        //         textSize(6);
-        //         text(i, this.originX + x -5, this.originY + this.tickLen*3);
-        //         text(-i, this.originX - x, this.originY + this.tickLen*3);
-        //         text(i, this.originX - this.tickLen*3, this.originY - y+7);
-        //         text(-i, this.originX - this.tickLen*3, this.originY + y-2);
-
-        //         pop();
-
-        //     }
-            
-        //     // line(this.originX- x, this.originY - this.height/2, this.originX - x, this.originY + this.height/2);
-
-        //     // line(0, y, this.width, y);
-        //     // line(0, y, this.width, y);
-        //     // line(0, y, this.width, y);
-        // }
-
-        if (this.origin == 'CENTER'){
-            //Layout Grid\\
-            translate(this.originX, this.originY);
-            rectMode(CENTER);
-            push();
-            noStroke();
-            rect(this.width/2, this.height/2, this.width, this.height)
-            pop();
-            let spacingY = this.height / this.resolution;
-            let spacingX = this.width / this.resolution;
-            for (let i = 0; i <= this.resolution; i++){
-                let y = spacingY*i;
-                let x = spacingX*i;
-                stroke(55, 55, 55, 25);
-                push();
-                strokeWeight(this.lineW);
-                line(0, y, this.width, y);
-                line(x, 0, x, this.height);
-                line()
-                pop();
-            }
-
-            //Layout Origin Lines\\
-            push();
-            stroke(255,0,0);
-            strokeWeight(1);
-            line(0, this.height/2, this.width, this.height/2);
-            pop();
-
-            push();
-            stroke(0,0,255);
-            strokeWeight(1);
-            line(this.width/2, 0, this.width/2, this.height);
-            pop();
-
-            //Layout tick marks\\
-            let tickX = this.height / this.resolution;
-            let tickY = this.width / this.resolution;
-            let tickLen = 3;
-            
-            for (let i = 0; i <= this.resolution; i++){
-                let x = tickX*i;
-                let y = tickY*i;
-                stroke(0,0,0, 255);
-                push();
+            if (this.yIsInBounds(this.gridOriginY - ySpace)){
                 strokeWeight(1);
-                if (i != this.resolution/2){
-                    line(x, this.height/2-tickLen, x, this.height/2+tickLen);
-                    line(this.width/2-tickLen, y, this.width/2+tickLen, y);
+                stroke(0,0,0,this.gridOpacity);
+                line(this.leftEdge, this.gridOriginY - ySpace, this.rightEdge, this.gridOriginY - ySpace);
+                strokeWeight(1);
+                stroke(0,0,0,255);
+                if (this.xIsInBounds(this.gridOriginX)){
+                    line(this.gridOriginX - this.tickLen, this.gridOriginY - ySpace, this.gridOriginX + this.tickLen, this.gridOriginY - ySpace);
+                    fill(0);
+                    noStroke();
+                    textSize(this.textSize);
+                    textAlign(CENTER, CENTER);
+                    text(i, this.gridOriginX - this.tickLen*3, this.gridOriginY - ySpace);
                 }
                 
-                line()
-                pop();
-
             }
+            
         }
+        //Draw Neg Y Lines\\
+        for (let i = 1; i <= botGridLines; i++){
+            let ySpace = i * this.spacingY;
+            if (this.yIsInBounds(this.gridOriginY + ySpace)){
+                strokeWeight(1);
+                stroke(0,0,0,this.gridOpacity);
+                line(this.leftEdge, this.gridOriginY + ySpace, this.rightEdge, this.gridOriginY + ySpace);
+                strokeWeight(1);
+                stroke(0,0,0,255);
+                if (this.xIsInBounds(this.gridOriginX)){
+                    line(this.gridOriginX - this.tickLen, this.gridOriginY + ySpace, this.gridOriginX + this.tickLen, this.gridOriginY + ySpace);
+                    fill(0);
+                    noStroke();
+                    textSize(this.textSize);
+                    textAlign(CENTER, CENTER);
+                    text(-i, this.gridOriginX - this.tickLen*3, this.gridOriginY + ySpace);
+                }
+            }   
+        }
+
+        push();
+        noFill();
+        stroke(100);
+        strokeWeight(10);
+        rectMode(CENTER);
+        rect(this.originX, this.originY, this.width+3, this.height+3);
+        pop();
         
     }
-
 }
